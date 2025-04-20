@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
 from .states import UserStates
-from config.settings import get_translation
+from config.settings import get_translation, ADMIN_ID
 from keyboards.keyboards import main_key, phone_number_key
 from utils.utils import *
 
@@ -22,8 +22,7 @@ async def start_handler(message: Message, state: FSMContext, bot: Bot):
             await message.reply(get_translation("start_message", 'uz'), parse_mode="HTML", reply_markup=phone_number_key())
             await state.set_state(UserStates.phone_number)
     except Exception as e:
-        await message.answer(f"Error occured: {e}")
-
+        await bot.send_message(ADMIN_ID, f"❌ Error: {e}")
 
 @router.message(lambda message: message.contact, UserStates.phone_number)
 async def handle_phone_number(message: Message, state: FSMContext, bot: Bot):
@@ -36,7 +35,7 @@ async def handle_phone_number(message: Message, state: FSMContext, bot: Bot):
         await state.set_state(UserStates.main)
         set_user_state(user_id, UserStates.main.state)
     except Exception as e:
-        await message.answer(f"Error occured: {e}")
+        await bot.send_message(ADMIN_ID, f"❌ Error: {e}")
 
 @router.message(UserStates.main)
 async def handle_main(message: Message, state: FSMContext, bot: Bot):
@@ -46,7 +45,7 @@ async def handle_main(message: Message, state: FSMContext, bot: Bot):
         await message.reply(get_translation("main_message", 'uz'), parse_mode="HTML", reply_markup=main_key())
         await state.set_state(UserStates.main)
     except Exception as e:
-        await message.reply(f"Error occured: {e}")
+        await bot.send_message(ADMIN_ID, f"❌ Error: {e}")
 
 
 
