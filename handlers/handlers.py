@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
 from .states import UserStates
 from config.settings import get_translation, ADMIN_ID
-from keyboards.keyboards import main_key, phone_number_key
+from keyboards.keyboards import main_key, phone_number_key, BALANCE
 from utils.utils import *
 
 router = Router()
@@ -30,10 +30,39 @@ async def handle_phone_number(message: Message, state: FSMContext, bot: Bot):
         user_id = message.from_user.id
         phone_number = message.contact.phone_number
         set_user_phone_number(user_id=user_id, phone_number=phone_number)
+        try:
+            user_info = await get_user_info(phone_number=phone_number)
+            if user_info and "user_data" in user_info and user_info["user_data"]:
+                await message.answer(get_translation('thanks', 'uz'), parse_mode="HTML")
+                await message.reply(get_translation('main_message', 'uz'), parse_mode="HTML", reply_markup=main_key())
+                await state.set_state(UserStates.main)
+                set_user_state(user_id, UserStates.main.state)
+            else:
+                await message.reply(get_translation('user_not_found', 'uz'), parse_mode="HTML")
+        except Exception as e:
+            await message.reply(get_translation('user_not_found', 'uz'), parse_mode="HTML")
+            await bot.send_message(ADMIN_ID, f"❌ Error fetching user info: {e}")
         await message.answer(get_translation('thanks', 'uz'), parse_mode="HTML")    
         await message.reply(get_translation('main_message', 'uz'), parse_mode="HTML", reply_markup=main_key())
         await state.set_state(UserStates.main)
         set_user_state(user_id, UserStates.main.state)
+    except Exception as e:
+        await bot.send_message(ADMIN_ID, f"❌ Error: {e}")
+
+@router.message(lambda message: message.text == BALANCE, UserStates.main)
+async def handle_balance(message: Message, state: FSMContext, bot: Bot):
+    try:
+        user_id = message.from_user.id
+        set_user_state(user_id, UserStates.main.state)
+        phone_number = get_user_phone_number(user_id=user_id)
+        user_info = await get_user_info(phone_number=phone_number)
+        if user_info and "user_data" in user_info and user_info["user_data"]:
+            balance = user_info["user_data"].get("balance", 0)
+            await message.answer(get_translation('balance_message', 'uz').format(balance), parse_mode="HTML")
+        else:
+            await message.answer(get_translation('user_not_found', 'uz'), parse_mode="HTML")
+        await message.reply(get_translation("main_message", 'uz'), parse_mode="HTML", reply_markup=main_key())
+        await state.set_state(UserStates.main)
     except Exception as e:
         await bot.send_message(ADMIN_ID, f"❌ Error: {e}")
 

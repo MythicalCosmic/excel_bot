@@ -1,7 +1,7 @@
-from sqlalchemy.orm import Session
 from database.models import User
 from database.database import engine, SessionLocal
-
+from config.settings import URL_FOR_INFO, API_KEY
+import aiohttp
 
 def user_exists(user_id: int) -> bool:
     db = SessionLocal()
@@ -57,3 +57,30 @@ def check_user_phone_number_exists(user_id: int) -> bool:
         return exists
     finally:
         db.close()
+
+
+async def get_user_info(phone_number: str):
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            url=URL_FOR_INFO,
+            json={"phone_number": phone_number}, 
+            headers={'Authorization': API_KEY}
+        ) as response:
+            if response.status == 200:
+                return await response.json()  
+            else:
+                response_text = await response.text()
+                raise Exception(f"Failed to fetch user info: {response.status} - {response_text}")
+
+def get_user_phone_number(user_id: int) -> str | None:
+    db = SessionLocal()
+    user = db.query(User).filter(User.id == user_id).first()
+    db.close()
+    
+    return user.phone_number if user else None
+
+def get_user_id(phone_number: str):
+    db = SessionLocal()
+    user = db.query(User).filter(User.phone_number == phone_number).first()
+    db.close()
+    return user.id if user else None

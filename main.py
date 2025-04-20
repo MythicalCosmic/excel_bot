@@ -1,10 +1,12 @@
 import asyncio
 import logging
 from uvicorn import Config, Server
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Query
 from aiogram.types import Update
 from config.config import bot, dp
+from utils.utils import get_user_info, get_user_id
 from config.settings import WEBHOOK
+import traceback
 
 
 app = FastAPI()
@@ -22,6 +24,24 @@ async def start_webhook():
     server = Server(config)
     await server.serve()
 
+@app.post("/notify-user/")
+async def notify_user(
+    phone_number: str = Query(..., description="User's phone number"),
+    amount: float = Query(..., description="Amount to notify user about")
+):
+    try:
+        telegram_id = get_user_id(phone_number=phone_number)
+        if not telegram_id:
+            raise HTTPException(status_code=404, detail="Telegram ID not found for this user")
+        
+        message = f"💰 Your account has been credited with {amount} units. Thank you!"
+        await bot.send_message(chat_id=telegram_id, text=message)
+        return {"status": "success", "message": "Notification sent successfully"}
+    
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error: {e}")
+    
 async def start_polling():
     logging.info("Starting bot in polling mode...")
     await bot.delete_webhook(drop_pending_updates=True)

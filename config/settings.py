@@ -12,6 +12,8 @@ ADMIN_ID = os.getenv("ADMIN_ID")
 WEBHOOK = os.getenv("WEBHOOK", "False").lower() == "true"
 WEBHOOK_URL = os.getenv("WEBHOOK_URL", "")
 
+URL_FOR_INFO = os.getenv("URL_FOR_INFO", "")
+API_KEY = os.getenv("API_KEY", "")
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///database.db")
 
