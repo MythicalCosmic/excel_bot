@@ -1,0 +1,25 @@
+uz:
+  start_message: |
+    <b>👋 Assalomu alaykum!</b>
+    
+    <i>Sizni botimizda ko‘rganimizdan nihoyatda mamnunmiz!</i> 😊
+
+    📱 <b>Iltimos, davom etish uchun telefon raqamingizni yuboring.</b>
+    
+    🔐 Bu sizning <u>shaxsiy kabinetingizga</u> kirish imkonini beradi va barcha imkoniyatlarni ochadi.
+
+  thanks: |
+    <b>✅ Rahmat!</b>
+    
+    Sizning telefon raqamingiz muvaffaqiyatli qabul qilindi. 🎉
+    
+    Endi barcha xizmatlar siz uchun ochiq!
+
+  main_message: |
+    <b>🏠 Asosiy bo‘limga xush kelibsiz!</b>
+    
+    <i>Bu yerda siz quyidagi xizmatlardan foydalanishingiz mumkin:</i>
+ 
+    • ⚙️ Balansingizni tekshiring
+
+    🔽 Quyidagi menyudan birini tanlang va boshlang!
