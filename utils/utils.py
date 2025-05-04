@@ -61,16 +61,16 @@ def check_user_phone_number_exists(user_id: int) -> bool:
 
 async def get_user_info(phone_number: str):
     async with aiohttp.ClientSession() as session:
-        async with session.post(
-            url=URL_FOR_INFO,
-            json={"phone_number": phone_number}, 
-            headers={'Authorization': API_KEY}
+        async with session.get( 
+            url=f"{URL_FOR_INFO}/clients/{phone_number}",
+            headers={'X-API-KEY': API_KEY}
         ) as response:
             if response.status == 200:
-                return await response.json()  
+                return await response.json()
             else:
                 response_text = await response.text()
                 raise Exception(f"Failed to fetch user info: {response.status} - {response_text}")
+
 
 def get_user_phone_number(user_id: int) -> str | None:
     db = SessionLocal()

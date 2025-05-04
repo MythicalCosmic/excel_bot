@@ -19,7 +19,25 @@ uz:
     <b>🏠 Asosiy bo‘limga xush kelibsiz!</b>
     
     <i>Bu yerda siz quyidagi xizmatlardan foydalanishingiz mumkin:</i>
- 
-    • ⚙️ Balansingizni tekshiring
+
+    • 💰 Balansingizni tekshirish  
+    • ⚙️ Sozlamalarni ko‘rish  
+    • 📞 Yordam olish
 
     🔽 Quyidagi menyudan birini tanlang va boshlang!
+
+  balance_message: "💰 Sizning balansingiz: <b>{}</b> so‘m"
+
+  user_not_found: "❗️Foydalanuvchi topilmadi. Iltimos, ro‘yxatdan o‘tganingizga ishonch hosil qiling."
+
+  error_message: "❌ Noma'lum xatolik yuz berdi. Iltimos, keyinroq yana urinib ko‘ring."
+
+  share_contact_prompt: |
+    📲 Iltimos, telefon raqamingizni yuboring:
+
+    Bu sizga shaxsiy kabinetingizdan foydalanish imkonini beradi.
+
+  already_registered: |
+    📞 Siz allaqachon ro‘yxatdan o‘tgansiz!
+
+    Davom etish uchun asosiy menyudan foydalaning.
