@@ -28,26 +28,30 @@ async def start_handler(message: Message, state: FSMContext, bot: Bot):
 async def handle_phone_number(message: Message, state: FSMContext, bot: Bot):
     try:
         user_id = message.from_user.id
-        phone_number = message.contact.phone_number
-        set_user_phone_number(user_id=user_id, phone_number=phone_number)
+        raw_number = message.contact.phone_number.lstrip().replace(" ", "")
+        phone_number = raw_number if raw_number.startswith("+") else f"+{raw_number}"
+
         try:
             user_info = await get_user_info(phone_number=phone_number)
-            if user_info and "user_data" in user_info and user_info["user_data"]:
+            if user_info and user_info.get("data") and phone_number in user_info["data"].get("phones", []):
+                set_user_phone_number(user_id=user_id, phone_number=phone_number)
                 await message.answer(get_translation('thanks', 'uz'), parse_mode="HTML")
                 await message.reply(get_translation('main_message', 'uz'), parse_mode="HTML", reply_markup=main_key())
                 await state.set_state(UserStates.main)
                 set_user_state(user_id, UserStates.main.state)
             else:
                 await message.reply(get_translation('user_not_found', 'uz'), parse_mode="HTML")
+                await message.answer(phone_number, parse_mode="HTML")
                 await state.set_state(UserStates.phone_number)
                 set_user_state(user_id, UserStates.phone_number.state)
         except Exception as e:
             await message.reply(get_translation('user_not_found', 'uz'), parse_mode="HTML")
             await bot.send_message(ADMIN_ID, f"❌ Error fetching user info: {e}")
-            await state.set_state(UserStates.main)
-        set_user_state(user_id, UserStates.main.state)
+            await state.set_state(UserStates.phone_number)
+            set_user_state(user_id, UserStates.phone_number.state)
     except Exception as e:
         await bot.send_message(chat_id=ADMIN_ID, text=f"❌ Error: {e}")
+
 
 @router.message(lambda message: message.text == BALANCE, UserStates.main)
 async def handle_balance(message: Message, state: FSMContext, bot: Bot):

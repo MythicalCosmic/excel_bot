@@ -20,27 +20,28 @@ async def webhook(update: dict):
 
 async def start_webhook():
     logging.info("Starting bot in webhook mode...")
-    config = Config(app=app, host="0.0.0.0", port=8000)
+    config = Config(app=app, host="0.0.0.0", port=8002)
     server = Server(config)
     await server.serve()
 
+from pydantic import BaseModel
+
+class NotifyUserRequest(BaseModel):
+    phone_number: str
+    amount: float
+
 @app.post("/notify-user/")
-async def notify_user(
-    phone_number: str = Query(..., description="User's phone number"),
-    amount: float = Query(..., description="Amount to notify user about")
-):
-    try:
-        telegram_id = get_user_id(phone_number=phone_number)
-        if not telegram_id:
-            raise HTTPException(status_code=404, detail="Telegram ID not found for this user")
-        
-        message = f"💰 Your account has been credited with {amount} units. Thank you!"
-        await bot.send_message(chat_id=telegram_id, text=message)
-        return {"status": "success", "message": "Notification sent successfully"}
-    
-    except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error: {e}")
+async def notify_user(data: NotifyUserRequest):
+    phone_number = data.phone_number
+    amount = data.amount
+
+    telegram_id = get_user_id(phone_number=phone_number)
+    if not telegram_id:
+        raise HTTPException(status_code=404, detail="Telegram ID not found for this user")
+
+    message = f"💰 Your account has been credited with {amount} units. Thank you!"
+    await bot.send_message(chat_id=telegram_id, text=message)
+    return {"status": "success", "message": "Notification sent successfully"}
     
 async def start_polling():
     logging.info("Starting bot in polling mode...")

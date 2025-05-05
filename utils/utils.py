@@ -62,7 +62,7 @@ def check_user_phone_number_exists(user_id: int) -> bool:
 async def get_user_info(phone_number: str):
     async with aiohttp.ClientSession() as session:
         async with session.get( 
-            url=f"{URL_FOR_INFO}/clients/{phone_number}",
+            url=f"http://127.0.0.1:8000/api/clients/{phone_number}",
             headers={'X-API-KEY': API_KEY}
         ) as response:
             if response.status == 200:

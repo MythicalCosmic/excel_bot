@@ -3,7 +3,7 @@ import logging
 from dotenv import load_dotenv
 import yaml
 
-load_dotenv()
+load_dotenv("/home/dev/Projects/exelv1/.env")
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = os.getenv("ADMIN_ID")
